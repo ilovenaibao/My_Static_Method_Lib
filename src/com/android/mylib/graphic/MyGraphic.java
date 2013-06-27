@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 import com.android.mylib.screen.MyLibScreenInfo;
 import com.android.mylib.screen.MyLibScreenSetting;
@@ -72,15 +73,16 @@ public class MyGraphic {
 		return bd;
 	}
 
-    /**
-     * @describe Load one bitmap from filePath
-     *
-     * @param String filePath : src path
-     * @param int outWidth : max width of bitmap
-     * @param int outHeight : max height of bitmap
-	 *
+	/**
+	 * @describe Load one bitmap from filePath
+	 * 
+	 * @param String
+	 *            filePath : src path
+	 * @param int outWidth : max width of bitmap
+	 * @param int outHeight : max height of bitmap
+	 * 
 	 * @return Bitmap : return one Load bitmap exception null
-     */
+	 */
 	public static Bitmap loadBitmapAutoSize(String filePath, int outWidth,
 			int outHeight) {
 		// outWidth和outHeight是目标图片的最大宽度和高度，用作限制
@@ -105,16 +107,18 @@ public class MyGraphic {
 		return null;
 	}
 
-    /**
-     * @describe When load one bitmap will out of memory, so this bitmap option
-	 * can setting bitmap to a compatible size.
-     *
-     * @param String file : bitmap file path
-     * @param ing width : max bitmap width
-     * @param int height : max bitmap height
+	/**
+	 * @describe When load one bitmap will out of memory, so this bitmap option
+	 *           can setting bitmap to a compatible size.
+	 * 
+	 * @param String
+	 *            file : bitmap file path
+	 * @param ing
+	 *            width : max bitmap width
+	 * @param int height : max bitmap height
 	 * 
 	 * @return BitmapFactory.Options : bitmap of options
-     */
+	 */
 	private static BitmapFactory.Options setBitmapOption(String file,
 			int width, int height) {
 		BitmapFactory.Options opt = new BitmapFactory.Options();
@@ -139,13 +143,13 @@ public class MyGraphic {
 		return opt;
 	}
 
-    /**
-     * @describe my test load one bitmap functions
-     * 
-     * @param context 
-     * @param path 
-     * @return Bitmap
-     */
+	/**
+	 * @describe my test load one bitmap functions
+	 * 
+	 * @param context
+	 * @param path
+	 * @return Bitmap
+	 */
 	public static Bitmap loadingOnePic(Context context, String path) {
 		// Loading Pic
 		BitmapFactory.Options options = new BitmapFactory.Options();
@@ -165,16 +169,18 @@ public class MyGraphic {
 		return bmp;
 	}
 
-    /**
-     * @describe my test load bitmap function 2
-     *
-     * @param Context context : parent activity context
-     * @param String path : file path
-     * @param int width : max bitmap width
+	/**
+	 * @describe my test load bitmap function 2
+	 * 
+	 * @param Context
+	 *            context : parent activity context
+	 * @param String
+	 *            path : file path
+	 * @param int width : max bitmap width
 	 * @param int height : max bitmap height
-	 *
+	 * 
 	 * @return Bitmap : return a bitmap exception null
-     */
+	 */
 	public static Bitmap loadingOnePic(Context context, String path, int width,
 			int height) {
 		// Loading Pic
@@ -194,16 +200,17 @@ public class MyGraphic {
 		Bitmap bmp = BitmapFactory.decodeFile(path, options);
 		return bmp;
 	}
-	
-    /**
-     * @describe calculate bitmap options can resolve out of memory.
-     *
-     * @param BitmapFactory.Options : bitmap options
-     * @param int reqWidth : decode bitmap max width
-     * @param int reqHeight : decode bitmap max height
-	 * @return int : sampleSize if it is 1 is oragin size and if it is 2 is width/2, 
-	 * height/2 calculate 1/4 of oragin bitmap
-     */
+
+	/**
+	 * @describe calculate bitmap options can resolve out of memory.
+	 * 
+	 * @param BitmapFactory
+	 *            .Options : bitmap options
+	 * @param int reqWidth : decode bitmap max width
+	 * @param int reqHeight : decode bitmap max height
+	 * @return int : sampleSize if it is 1 is oragin size and if it is 2 is
+	 *         width/2, height/2 calculate 1/4 of oragin bitmap
+	 */
 	public static int calculateInSampleSize(BitmapFactory.Options options,
 			int reqWidth, int reqHeight) {
 		// Raw height and width of image
@@ -221,14 +228,17 @@ public class MyGraphic {
 	}
 
 	// Matrix bmp
-    /**
-     * @describe make a ration bitmap from source bitmap
-     * 
-     * @param bmp : src bitmap
-     * @param width : target scale width
-     * @param height : target scale height
-     * @return Bitmap : return a matrix bitmap exception null
-     */
+	/**
+	 * @describe make a ration bitmap from source bitmap
+	 * 
+	 * @param bmp
+	 *            : src bitmap
+	 * @param width
+	 *            : target scale width
+	 * @param height
+	 *            : target scale height
+	 * @return Bitmap : return a matrix bitmap exception null
+	 */
 	public static Bitmap BitmapRatioMatrix(Bitmap bmp, float width, float height) {
 		Bitmap ret = null;
 		int oraginWidth = bmp.getWidth();
@@ -272,5 +282,47 @@ public class MyGraphic {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * 将从WebView中获得的Pic存储到sdcard
+	 * 
+	 * @param path
+	 *            存儲的路徑
+	 * @param fileName
+	 *            存儲的文件名
+	 * @param srcBmp
+	 *            存儲的目標bitmap
+	 */
+	public static boolean SavePicture(String path, String fileName,
+			Bitmap srcBmp) {
+		boolean ret = false;
+		String tmp_name = new String(path + fileName);
+		File tmp_file = new File(tmp_name);
+		if (tmp_file.exists()) {
+			tmp_file.delete();
+		}
+		String absolutePath = path;
+		char[] pathChar = absolutePath.toCharArray();
+		if (File.separator.toCharArray()[0] == pathChar[pathChar.length - 1]) {
+			absolutePath = absolutePath.substring(0, absolutePath.length() - 1);
+		}
+		File dir = new File(absolutePath);
+		dir.mkdirs();
+		// try {
+		// tmp_file.createNewFile();
+		// } catch (IOException e1) {
+		// e1.printStackTrace();
+		// }
+		try {
+			FileOutputStream out = new FileOutputStream(tmp_file);
+			srcBmp.compress(Bitmap.CompressFormat.PNG, 100, out);
+			out.flush();
+			out.close();
+			ret = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return ret;
 	}
 }
